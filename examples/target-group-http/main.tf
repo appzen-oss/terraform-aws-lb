@@ -51,10 +51,10 @@ resource "aws_security_group" "lb" {
   }
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -64,8 +64,9 @@ module "lb-http" {
   environment  = "${var.environment}"
   organization = "${var.organization}"
 
-  enabled              = false
+  enabled           = false
   target_group_only = true
+
   #enable_deletion_protection = true
   #enable_http2         = false
   instance_http_ports = "80,8080"
@@ -77,7 +78,7 @@ module "lb-http" {
   lb_protocols         = ["HTTP"]
   lb_tcp_ports         = ""
   ports                = "3000,4000"
-  security_groups      = ["${aws_security_group.lb.id}"]                                 # Need at least 1
+  security_groups      = ["${aws_security_group.lb.id}"]                 # Need at least 1
   subnets              = "${data.aws_subnet_ids.private_subnet_ids.ids}"
   vpc_id               = "${module.vpc.vpc_id}"
 }

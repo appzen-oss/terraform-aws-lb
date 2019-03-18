@@ -118,10 +118,11 @@ data "aws_acm_certificate" "additional" {
 
 # May need to create 2: 1 w/ logs and 1 w/o logs
 resource "aws_lb" "application" {
-  count              = "${
+  count = "${
     module.enabled.value &&
     var.type == "application"
     ? 1 : 0}"
+
   name               = "${module.label.id_32}"
   internal           = "${var.internal}"
   load_balancer_type = "${var.type}"
@@ -154,10 +155,11 @@ resource "aws_lb" "application" {
 }
 
 resource "aws_lb" "network" {
-  count              = "${
+  count = "${
     module.enabled.value &&
     var.type == "network"
     ? 1 : 0}"
+
   name               = "${module.label.id_32}"
   internal           = "${var.internal}"
   load_balancer_type = "${var.type}"
@@ -481,3 +483,4 @@ resource "aws_lb_listener_rule" "this" {
   }
 }
 */
+
