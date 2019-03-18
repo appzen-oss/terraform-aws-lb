@@ -15,17 +15,29 @@
 #
 # TODO Future:
 #   Multiple LBs ?
+#   New options:
+#     target group w/o LB
+#     redirect listener
+#     logging
+#     pass in target group instead of creating
+#
 
 module "enable_logging" {
   source  = "devops-workflow/boolean/local"
-  version = "0.1.1"
+  version = "0.1.2"
   value   = "${var.enable_logging}"
 }
 
 module "enabled" {
   source  = "devops-workflow/boolean/local"
-  version = "0.1.1"
+  version = "0.1.2"
   value   = "${var.enabled}"
+}
+
+module "target_group_only" {
+  source  = "devops-workflow/boolean/local"
+  version = "0.1.2"
+  value   = "${var.target_group_only}"
 }
 
 module "label" {
@@ -49,6 +61,7 @@ module "label" {
 
 # TODO: need to support from var both basename and a complete name
 #       may have 1 log bucket for many apps
+# 2 new vars for bucket namespacing
 module "log_bucket" {
   source        = "devops-workflow/label/local"
   version       = "0.2.1"
@@ -105,7 +118,10 @@ data "aws_acm_certificate" "additional" {
 
 # May need to create 2: 1 w/ logs and 1 w/o logs
 resource "aws_lb" "application" {
-  count              = "${module.enabled.value && var.type == "application" ? 1 : 0}"
+  count              = "${
+    module.enabled.value &&
+    var.type == "application"
+    ? 1 : 0}"
   name               = "${module.label.id_32}"
   internal           = "${var.internal}"
   load_balancer_type = "${var.type}"
@@ -138,7 +154,10 @@ resource "aws_lb" "application" {
 }
 
 resource "aws_lb" "network" {
-  count              = "${module.enabled.value && var.type == "network" ? 1 : 0}"
+  count              = "${
+    module.enabled.value &&
+    var.type == "network"
+    ? 1 : 0}"
   name               = "${module.label.id_32}"
   internal           = "${var.internal}"
   load_balancer_type = "${var.type}"
@@ -247,7 +266,7 @@ locals {
 
 resource "aws_lb_target_group" "application-http" {
   count = "${
-    module.enabled.value &&
+    (module.enabled.value || module.target_group_only.value) &&
     var.type == "application" &&
     contains(var.lb_protocols, "HTTP")
     ? length(compact(split(",", local.instance_http_ports))) : 0}"
@@ -290,7 +309,7 @@ resource "aws_lb_target_group" "application-http" {
 
 resource "aws_lb_target_group" "application-https" {
   count = "${
-    module.enabled.value &&
+    (module.enabled.value || module.target_group_only.value) &&
     var.type == "application" &&
     contains(var.lb_protocols, "HTTPS")
     ? length(compact(split(",", local.instance_https_ports))) : 0}"
@@ -358,7 +377,7 @@ locals {
 
 resource "aws_lb_target_group" "network" {
   count = "${
-    module.enabled.value &&
+    (module.enabled.value || module.target_group_only.value) &&
     var.type == "network"
     ? length(compact(split(",", local.instance_tcp_ports))) : 0}"
 
@@ -462,4 +481,3 @@ resource "aws_lb_listener_rule" "this" {
   }
 }
 */
-
