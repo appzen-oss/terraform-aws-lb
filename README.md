@@ -97,3 +97,9 @@ Many thanks to [the contributers listed here](https://github.com/terraform-aws-m
 
 ## License
 MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-alb/tree/master/LICENSE) for full details.
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM GRAPH HOOK -->
+
+### Resource Graph of plan
+
+![Terraform Graph](resource-plan-graph.png)
+<!-- END OF PRE-COMMIT-TERRAFORM GRAPH HOOK -->
