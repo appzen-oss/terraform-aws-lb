@@ -109,7 +109,8 @@ data "aws_acm_certificate" "additional" {
   count = "${
     module.enabled.value &&
     var.type == "application" &&
-    contains(var.lb_protocols, "HTTPS")
+    contains(var.lb_protocols, "HTTPS") &&
+    length(var.certificate_additional_names) > 0
     ? length(var.certificate_additional_names) : 0
   }"
 
