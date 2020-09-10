@@ -296,7 +296,7 @@ variable "cookie_duration" {
 
 variable "security_policy" {
   description = "The security policy if using HTTPS externally on the LB. See: https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html"
-  default     = "ELBSecurityPolicy-2016-08"
+  default     = "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
 }
 
 variable "vpc_id" {
