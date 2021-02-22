@@ -90,9 +90,15 @@ variable "enabled" {
 }
 
 variable "enable_logging" {
+  type        = "string"
   description = "Enable the LB to write log entries to S3."
-  default     = false
+  default     = "false"
 }
+
+#variable "enable_logging" {
+#  description = "Enable the LB to write log entries to S3."
+#  default     = false
+#}
 
 variable "certificate_additional_names" {
   description = "List of additional names of SSL Certificates to look up in ACM and use"
