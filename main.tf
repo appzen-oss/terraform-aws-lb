@@ -117,6 +117,20 @@ data "aws_acm_certificate" "additional" {
   domain = "${var.certificate_additional_names[count.index]}"
 }
 
+locals {
+  access_logs_def = {
+    "1" = [{
+       bucket  = "${var.log_bucket_name}"
+       prefix  = "${var.log_location_prefix}"
+       enabled = true
+    }]
+
+    "0" = []
+  }
+
+  access_logs = "${local.access_logs_def[module.enable_logging.value]}"
+}
+
 # May need to create 2: 1 w/ logs and 1 w/o logs
 resource "aws_lb" "application" {
   count = "${
@@ -135,14 +149,16 @@ resource "aws_lb" "application" {
   subnets                    = ["${var.subnets}"]
   tags                       = "${module.label.tags}"
 
+  access_logs = "${local.access_logs}"
+  
   #ip_address_type     = "${}"
 
   # Doesn't seem to be able to disable properly
-  #  access_logs {
-  #    bucket  = "${module.log_bucket.id}"  # ? Cannot be empty and must exist
-  #    prefix  = "${var.log_location_prefix}"
-  #    enabled = "${module.enable_logging.value}"
-  #  }
+  # access_logs {
+  #   bucket  = "${module.log_bucket.id}"  # ? Cannot be empty and must exist
+  #   prefix  = "${var.log_location_prefix}"
+  #   enabled = "${module.enable_logging.value}"
+  # }
   #  subnet_mapping {
   #    subnet_id     = "${}"
   #    allocation_id = "${}"
@@ -170,6 +186,8 @@ resource "aws_lb" "network" {
   idle_timeout                     = "${var.idle_timeout}"
   subnets                          = ["${var.subnets}"]
   tags                             = "${module.label.tags}"
+
+  access_logs = "${local.access_logs}"
 
   #ip_address_type     = "${}"
 
